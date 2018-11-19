@@ -1,0 +1,40 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.7
+    ports: 
+      - 3306:3306
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: magento2 
+    networks:
+      - appnet
+  php:
+    build: php
+    volumes:
+      - ./src:/var/www/html
+      - /var/www/html/application
+    networks:
+      - appnet
+      - default
+  web:
+    image: nginx:latest
+    build: nginx
+    volumes:
+      - /var/www/html/applications
+    restart: always
+    ports:
+      - "80:80"
+    links:
+      - php
+    depends_on:
+      - php
+    networks:
+      - appnet
+      - default
+networks:
+  appnet:
+    driver: "bridge"
+
+
